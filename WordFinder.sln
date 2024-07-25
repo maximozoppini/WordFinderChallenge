@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordFinder.Logic", "WordFinder.Logic\WordFinder.Logic.csproj", "{AE2B9512-51C4-478C-BB58-A41955AF59C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordFinder.Api", "WordFinder.Api\WordFinder.Api.csproj", "{75BEAF04-5D30-4ECC-A71D-D8E6227700A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordFinder.Test", "WordFinder.Test\WordFinder.Test.csproj", "{556957D8-CBB9-4CA0-9889-8B2B9D1B8FA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE2B9512-51C4-478C-BB58-A41955AF59C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE2B9512-51C4-478C-BB58-A41955AF59C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE2B9512-51C4-478C-BB58-A41955AF59C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE2B9512-51C4-478C-BB58-A41955AF59C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75BEAF04-5D30-4ECC-A71D-D8E6227700A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75BEAF04-5D30-4ECC-A71D-D8E6227700A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75BEAF04-5D30-4ECC-A71D-D8E6227700A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75BEAF04-5D30-4ECC-A71D-D8E6227700A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{556957D8-CBB9-4CA0-9889-8B2B9D1B8FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556957D8-CBB9-4CA0-9889-8B2B9D1B8FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556957D8-CBB9-4CA0-9889-8B2B9D1B8FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556957D8-CBB9-4CA0-9889-8B2B9D1B8FA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {974E4D5D-3ADB-4090-9F09-A884CAD33C5B}
+	EndGlobalSection
+EndGlobal
