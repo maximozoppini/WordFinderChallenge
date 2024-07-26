@@ -69,7 +69,7 @@
                 {
                     for (int j = 0; j < wordMatrix[i].Length; j++)
                     {
-                        if (wordMatrix[i][j] == word[0] && FindRecursive(i, j, 0, word))
+                        if (wordMatrix[i][j] == word[0] && FindRecursive(i, j, word, 0))
                             topRepWords.Add(word);
                     }
                 }
@@ -78,10 +78,26 @@
             return topRepWords;
         }
 
-        public bool FindRecursive(int col, int row, int count, string word) {
+        /// <summary>
+        /// This method will look recursively every char of the word horizontally and vertically.
+        /// </summary>
+        /// <param name="col">wordMatrix col number</param>
+        /// <param name="row">wordMatrix row number</param>
+        /// <param name="word">word to be found</param>
+        /// <param name="wordCount">amount of letters of the word found</param>
+        /// <returns></returns>
+        public bool FindRecursive(int col, int row, string word, int wordCount) {
 
+            //if last word has been found return true
+            if (wordCount == word.Length)
+                return true;
 
-            return false;
+            //discard if next letter doesnt match
+            if (wordMatrix[col][row] != word[wordCount])
+                return false;
+
+            //recursive call to look horizontally
+            return FindRecursive(col, row+1, word, wordCount + 1);
         }
     }
 }
