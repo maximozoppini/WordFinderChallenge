@@ -74,7 +74,7 @@
                     }
                 }
             }
-
+            
             return topRepWords;
         }
 
@@ -92,12 +92,13 @@
             if (wordCount == word.Length)
                 return true;
 
-            //discard if next letter doesnt match
-            if (wordMatrix[col][row] != word[wordCount])
+            //discard if next letter doesnt match and check matrix bounds. 
+            if (col >= wordMatrix.Length || row >= wordMatrix[col].Length || wordMatrix[col][row] != word[wordCount])
                 return false;
 
-            //recursive call to look horizontally
-            return FindRecursive(col, row+1, word, wordCount + 1);
+        
+            //recursive call to look horizontally and vertically. Incrementing col and row number
+            return FindRecursive(col, row+1, word, wordCount + 1) || FindRecursive(col+1, row, word, wordCount + 1);
         }
     }
 }

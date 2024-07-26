@@ -82,10 +82,10 @@ namespace WordFinder.Test
         [Test]
         public void DELETEtEST()
         {
-            string[] list = { "asdfasdfmaximoasdf", "asdfasdfsolsolasdf", "asdfasdfeeeeeeasdf", "asdfasdfmarianasdf", "asdfasdfuuuuuuasdf" };
+            string[] list = { "lsdfasdfmaximoasdl", "asdfasdfsolsolasda", "usdfasdfeeeeeeasdu", "rsdfasdfmarianasdr", "asdfasdfuuuuuuasda" };
             var wordFinder = new Logic.WordFinder(list);
 
-            var result = wordFinder.Find(new List<string> { "maximo", "mauricio", "maxi", "sol", "marian" });
+            var result = wordFinder.Find(new List<string> { "maximo", "laura", "maxi", "sol", "marian" });
             Assert.That(result.Count(), Is.EqualTo(3));
         }
 
