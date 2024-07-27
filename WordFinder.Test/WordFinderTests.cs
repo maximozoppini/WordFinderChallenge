@@ -80,13 +80,25 @@ namespace WordFinder.Test
 
 
         [Test]
-        public void DELETEtEST()
+        public void Should_Create_Matrix_Return_Correct_Results()
         {
-            string[] list = { "lsdfasdfmaximoasdl", "asdfasdfsolsolasda", "usdfasdfeeeeeeasdu", "rsdfasdfmarianasdr", "asdfasdfuuuuuuasda" };
+            string[] list = { "enacsolrdsgi", "bwleqvplcoxp", "smimaximolmq", "excofrxbzqwu", "tnitljbyzxdl", "ytamqsagqzsl", "ctpmarianaob", "marianellaln" };
             var wordFinder = new Logic.WordFinder(list);
 
-            var result = wordFinder.Find(new List<string> { "maximo", "laura", "maxi", "sol", "marian" });
-            Assert.That(result.Count(), Is.EqualTo(3));
+            var result = wordFinder.Find(new List<string> { "maximo", "laura", "maxi", "sol", "marian", "sole" });
+            Assert.That(result.Count(), Is.EqualTo(4));
+            Assert.That(result.SequenceEqual(new List<string> {"sol","marian","maximo","maxi"}));
+        }
+
+        [Test]
+        public void Should_Create_Matrix_Return_Correct_Results_Paralell()
+        {
+            string[] list = { "enacsolrdsgi", "bwleqvplcoxp", "smimaximolmq", "excofrxbzqwu", "tnitljbyzxdl", "ytamqsagqzsl", "ctpmarianaob", "marianellaln" };
+            var wordFinder = new Logic.WordFinder(list);
+
+            var result = wordFinder.FindParalell(new List<string> { "maximo", "laura", "maxi", "sol", "marian", "sole" });
+            Assert.That(result.Count(), Is.EqualTo(4));
+            Assert.That(result.SequenceEqual(new List<string> { "sol", "marian", "maximo", "maxi" }));
         }
 
     }
