@@ -56,39 +56,6 @@ namespace WordFinder.Logic
             }
         }
 
-        //public IEnumerable<string> Find(IEnumerable<string> wordstream)
-        //{
-        //    List<string> topRepWords = new List<string>();
-
-        //    //sanity check for wordsStream
-        //    if (wordstream == null || wordstream.Any(word => string.IsNullOrEmpty(word) || string.IsNullOrWhiteSpace(word)))
-        //        throw new ArgumentException("wordStream can´t be null or have empty space");
-
-        //    //remove repeated words to avoid re-check matrix
-        //    var uniqueWordStream = wordstream.GroupBy(word => word);
-
-        //    //for every word in wordStream
-        //    foreach (var word in uniqueWordStream.Select(w => w.Key))
-        //    {
-        //        //first step is to look recursively inside the matrix the first character of the word. If found, then look right and down.
-        //        for (int i = 0; i < _wordMatrix.Length; i++)
-        //        {
-        //            for (int j = 0; j < _wordMatrix[i].Length; j++)
-        //            {
-                        
-        //                if (_wordMatrix[i][j] == word[0])
-        //                {
-        //                    var result = FindByRange(i, j, word);
-        //                    if (result.found)
-        //                        topRepWords.AddRange(Enumerable.Repeat(word, result.count));
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return topRepWords.GroupBy(w => w).OrderByDescending(o => o.Count()).Select(x => x.Key).Take(10);
-        //}
-
         public IEnumerable<string> Find(IEnumerable<string> wordstream)
         {
             //had to use concurrent bag because i was getting nulls when inserting values to list inside a paralell foreach
