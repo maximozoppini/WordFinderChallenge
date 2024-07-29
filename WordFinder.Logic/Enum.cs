@@ -10,5 +10,6 @@ namespace WordFinder.Logic
     {
         Range,
         Secuential,
+        Index
     }
 }

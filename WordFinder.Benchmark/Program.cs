@@ -7,4 +7,5 @@ public class Program
     {
         var summary = BenchmarkRunner.Run<WordFInderBenchmarks>();
     }
+
 }

@@ -1,25 +1,26 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BenchmarkDotNet.Diagnostics.Windows;
+using BenchmarkDotNet.Diagnostics.Windows.Configs;
 
 namespace WordFinder.Benchmark
 {
     [MemoryDiagnoser]
+    [ThreadingDiagnoser]
+    [ConcurrencyVisualizerProfiler]
+    [EtwProfiler]
+    [ExceptionDiagnoser]
     public class WordFInderBenchmarks
     {
         public IConfiguration _config;
-        [Params("appsettings.range.json", "appsettings.secuential.json")]
+        [Params("range","index","secuential")]
         public string ConfigFile;
 
         [GlobalSetup]
-        public void Setup() { 
-            _config = new ConfigurationBuilder().AddJsonFile(ConfigFile).Build();
-
+        public void Setup() {
+            _config = new ConfigurationBuilder().AddJsonFile($"appsettings.{ConfigFile}.json").Build();
         }
 
         [Benchmark]
@@ -33,4 +34,5 @@ namespace WordFinder.Benchmark
         }
 
     }
+
 }
