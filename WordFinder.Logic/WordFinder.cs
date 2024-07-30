@@ -6,7 +6,6 @@ namespace WordFinder.Logic
 {
     public class WordFinder
     {
-        private static ConcurrentDictionary<string, ConcurrentBag<(int row, int col)>> _indexes;
 
         private char[][] _wordMatrix;
         public char[][] WordMatrix
@@ -20,6 +19,7 @@ namespace WordFinder.Logic
         /// Constructor
         /// </summary>
         /// <param name="matrix">List of strings with same size</param>
+        /// <param name="configuration">IConfiguration object injected to the class</param>
         /// <exception cref="ArgumentException">Matrix input cannot be empty or exceed config size.</exception>
         /// <exception cref="ArgumentNullException">Matrix input cannot be null</exception>
         public WordFinder(IConfiguration configuration, IEnumerable<string> matrix)
@@ -34,7 +34,7 @@ namespace WordFinder.Logic
             _configuration = configuration;
             int maxWordMatrixSize = int.Parse(_configuration.GetSection("WordMatrixMaxSize").Value);
             if (matrix.Count() > maxWordMatrixSize || matrix.Any(word => word.Length > maxWordMatrixSize))
-                throw new ArgumentException("word matrix size invalid. Should be less than 64 cols and rows");
+                throw new ArgumentException($"word matrix size invalid. Should be less than {maxWordMatrixSize} cols and rows");
 
             //matrix entries should have the same size
             var firstWordLength = matrix.First().Length;
@@ -45,7 +45,14 @@ namespace WordFinder.Logic
             BuildWordMatrix(matrix);
         }
 
-        
+        /// <summary>
+        /// Find method that will search words inside the wordstream parameter inside the matrix. 
+        /// The type of search will be determine by the SearchStrategy enum. 
+        /// The function will return the top 10 most ocurring words from the stream. 
+        /// </summary>
+        /// <param name="wordstream">List of words to be find inside the word matrix</param>
+        /// <returns>List<string> containing the top 10 words from the stream found in the matrix</string></returns>
+        /// <exception cref="ArgumentException">wordstream should not be null or empty</exception>
         public IEnumerable<string> Find(IEnumerable<string> wordstream)
         {
             //had to use concurrent bag because i was getting nulls when inserting values to list inside a paralell foreach
@@ -60,13 +67,22 @@ namespace WordFinder.Logic
             var uniqueWordStream = wordstream.GroupBy(word => word);
 
             return strategy == SearchStrategyEnum.Index
-                ? FindByIndex(topRepWords, uniqueWordStream, strategy)
+                ? FindByIndex(topRepWords, uniqueWordStream)
                 : FindSecuential(topRepWords, uniqueWordStream, strategy);
 
 
         }
 
-        public IEnumerable<string> FindByIndex(ConcurrentBag<string> topRepWords, IEnumerable<IGrouping<string, string>> uniqueWordStream, SearchStrategyEnum strategy)
+        /// <summary>
+        /// The method will return the top 10 words found inside the matrix from the uniqueWordStream
+        /// It will create a dictionary from every first letter or the uniqueWordStream and a list of coordinates of those letters.
+        /// Finally it will loop the dictionary and check if the words are found either horizontally or vertically depending on those 
+        /// coordinates. 
+        /// </summary>
+        /// <param name="topRepWords">list to be return with words</param>
+        /// <param name="uniqueWordStream">Disctint list of words from the stream to be looked for</param>
+        /// <returns></returns>
+        private IEnumerable<string> FindByIndex(ConcurrentBag<string> topRepWords, IEnumerable<IGrouping<string, string>> uniqueWordStream)
         {
             //create letter index dictionary
             var indexes = buildWordIndex(uniqueWordStream);
@@ -80,6 +96,7 @@ namespace WordFinder.Logic
                 {
                     //positions at this point cannot be null
                     var positions = indexes.GetValueOrDefault(word[0]);
+                    //for each position it will check by range either horizontally or vertically if word is there.
                     Parallel.ForEach(positions, po, (position) =>
                     {
                         var result = SearchByRange(position.row, position.col, word);
@@ -96,7 +113,17 @@ namespace WordFinder.Logic
         }
 
 
-        public IEnumerable<string> FindSecuential(ConcurrentBag<string> topRepWords, IEnumerable<IGrouping<string, string>> uniqueWordStream, SearchStrategyEnum strategy) 
+        /// <summary>
+        /// The method will return the top 10 words from the wordsStream that have been found in the matrix
+        /// Depending on the strategy (Range or Recursive) it will loop using Paralell function every unique word if it is found
+        /// inside the matrix. 
+        /// It will loop the matrix until the first letter of the word is found and then it will look recursivly or by range the word. 
+        /// </summary>
+        /// <param name="topRepWords">list to be return</param>
+        /// <param name="uniqueWordStream">Disctint list of words from the stream to be looked for</param>
+        /// <param name="strategy">Enum for the looping strategy</param>
+        /// <returns></returns>
+        private IEnumerable<string> FindSecuential(ConcurrentBag<string> topRepWords, IEnumerable<IGrouping<string, string>> uniqueWordStream, SearchStrategyEnum strategy) 
         {
             ParallelOptions po = new ParallelOptions() { MaxDegreeOfParallelism = 4 };
             //for every unique word in wordStream
@@ -131,7 +158,17 @@ namespace WordFinder.Logic
             return topRepWords.GroupBy(w => w).OrderByDescending(o => o.Count()).Select(x => x.Key).Take(10);
         }
 
-        public bool SearchRecursive(int col, int row, string word, int wordCount)
+        /// <summary>
+        /// This method is the recursive strategy that if the first letter of the word has been found, It will check if 
+        /// right and down for the next letter of the word in a recursive way. Until the count reaches the size of the word. 
+        /// Checking if array indexes are not outside the wordMatrix
+        /// </summary>
+        /// <param name="col">x index number</param>
+        /// <param name="row">y index number</param>
+        /// <param name="word">word to be looked for</param>
+        /// <param name="wordCount">number of chars that have been found of the word</param>
+        /// <returns>true of it has been found, false if not</returns>
+        private bool SearchRecursive(int col, int row, string word, int wordCount)
         {
             //if last word has been found return true
             if (wordCount == word.Length)
@@ -145,12 +182,19 @@ namespace WordFinder.Logic
             return SearchRecursive(col, row + 1, word, wordCount + 1) || SearchRecursive(col + 1, row, word, wordCount + 1);
         }
 
-
-        public (bool found, int count) SearchByRange(int row, int col, string word)
+        /// <summary>
+        /// This method is the range strategy that if the first letter of the word has been foun, It will check right and down 
+        /// the entire word against a horizontal and vertical slice of the matrix. 
+        /// It will also check if the word size fits either vertically or horizontally to avoid looking outside the matrix
+        /// </summary>
+        /// <param name="row">x index number</param>
+        /// <param name="col">y indiex number</param>
+        /// <param name="word">word to be looked for</param>
+        /// <returns>Named tuple with True or false if word has been found and if so, the count of times the word has been found</returns>
+        private (bool found, int count) SearchByRange(int row, int col, string word)
         {
             bool hResult = false;
             bool vResult = false;
-            int count = 0;
 
             //check if horizontally the word to be search fit and if word match
             hResult = (_wordMatrix[row].Length >= col + word.Length) && string.Join("", _wordMatrix[row][col..(col + word.Length)]).Equals(word);
@@ -178,6 +222,13 @@ namespace WordFinder.Logic
             }
         }
 
+        /// <summary>
+        /// This method builds the dictionary of key: first letter of word, value: list of coordinates tuples. 
+        /// It will look paralell wise the wordMatrix and check with the unique set of first letters of the wordstream to be found if matches.
+        /// If so it will add or update the dictionary on that key with the coordinate. 
+        /// </summary>
+        /// <param name="wordStream">list of words to be found</param>
+        /// <returns>dictionary that contains for each first letter of input, the coordintes of the ocurrencies inside the matrix</returns>
         private ConcurrentDictionary<char, ConcurrentBag<(int row, int col)>> buildWordIndex(IEnumerable<IGrouping<string, string>> wordStream)
         {
             //use concurrent dictionary to search paralell
@@ -187,36 +238,35 @@ namespace WordFinder.Logic
             HashSet<char> uniqueFirstChars = new HashSet<char>();
             wordStream.Select(w => w.Key).ToList().ForEach(w => uniqueFirstChars.Add(w[0]));
 
-            ParallelOptions po = new ParallelOptions() { MaxDegreeOfParallelism = 4 };
-            //look secuentially wordMatrix to build letters indexes based on words to be looked for
-            Parallel.ForEach(uniqueFirstChars, po, (w) =>
+            // Parallel.For loop to process each row of the jagged array
+            Parallel.For(0, _wordMatrix.Length,  row =>
             {
-                for (int i = 0; i < _wordMatrix.Length; i++)
+                // Process each character in the current row
+                Parallel.For(0, _wordMatrix[row].Length, col =>
                 {
-                    for (int j = 0; j < _wordMatrix[i].Length; j++)
+                    char letter = _wordMatrix[row][col];
+                    if (uniqueFirstChars.Contains(letter))
                     {
-                        if (_wordMatrix[i][j] == w)
-                        {
-                            //if first letter exists, create an bag of the position under the index key 
-                            index.AddOrUpdate(
-                                key: w,
-                                _ =>
-                                {
-                                    // Create a new ConcurrentBag<int> if key doesn't exist
-                                    var newBag = new ConcurrentBag<(int row, int col)>() { (i, j) };
-                                    return newBag;
-                                },
-                                (key, existingBag) =>
-                                {
-                                    // Add the value to the existing bag
-                                    existingBag.Add((i, j));
-                                    return existingBag;
-                                }
-                            );
-                        }
+                        //if first letter exists, create an bag of the position under the index key 
+                        index.AddOrUpdate(
+                            key: letter,
+                            _ =>
+                            {
+                                // Create a new ConcurrentBag<int> if key doesn't exist
+                                var newBag = new ConcurrentBag<(int row, int col)>() { (row, col) };
+                                return newBag;
+                            },
+                            (key, existingBag) =>
+                            {
+                                // Add the value to the existing bag
+                                existingBag.Add((row, col));
+                                return existingBag;
+                            }
+                        );
                     }
-                }
+                });
             });
+
             return index;
         }
 
