@@ -85,7 +85,7 @@ namespace WordFinder.Logic
         private IEnumerable<string> FindByIndex(ConcurrentBag<string> topRepWords, IEnumerable<IGrouping<string, string>> uniqueWordStream)
         {
             //create letter index dictionary
-            var indexes = buildWordIndex(uniqueWordStream);
+            var indexes = BuildWordIndex(uniqueWordStream);
 
             ParallelOptions po = new ParallelOptions() { MaxDegreeOfParallelism = 4 };
             //for every unique word in wordStream
@@ -229,7 +229,7 @@ namespace WordFinder.Logic
         /// </summary>
         /// <param name="wordStream">list of words to be found</param>
         /// <returns>dictionary that contains for each first letter of input, the coordintes of the ocurrencies inside the matrix</returns>
-        private ConcurrentDictionary<char, ConcurrentBag<(int row, int col)>> buildWordIndex(IEnumerable<IGrouping<string, string>> wordStream)
+        private ConcurrentDictionary<char, ConcurrentBag<(int row, int col)>> BuildWordIndex(IEnumerable<IGrouping<string, string>> wordStream)
         {
             //use concurrent dictionary to search paralell
             var index = new ConcurrentDictionary<char, ConcurrentBag<(int row, int col)>>();
