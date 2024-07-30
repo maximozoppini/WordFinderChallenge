@@ -59,3 +59,8 @@ BenchmarkDotNet v0.13.12, Windows 11 (10.0.22631.3880/23H2/2023Update/SunValley3
 | BenchmarkFind_Stress | range      | 1,330.14 μs | 26.519 μs | 52.347 μs | 582.0313 |          - |               3.0000 |           0.0117 | 52.7344 | 3557.18 KB |
 | **BenchmarkFind_Normal** | **secuential** |    **16.33 μs** |  **0.278 μs** |  **0.320 μs** |   **1.9531** |          **-** |               **1.9879** |           **0.0024** |  **0.9766** |   **11.87 KB** |
 | BenchmarkFind_Stress | secuential |   195.03 μs |  3.827 μs |  4.094 μs |   7.8125 |          - |               3.0000 |           0.0078 |  2.4414 |   49.41 KB |
+
+## Running API
+
+The solution has a small WebAPI project called API. It has a single post endpoint that allow a user to test the FIND method by sending both the matrix list and the words to find. 
+It will return a list of the 10 most repeted words inside the matrix.
